@@ -105,22 +105,12 @@ def steps_to_python(s, steps):
 @app.route('/')
 async def handle_request(request):
     s = request.args.getlist('s')
-    if s:
-        s = s[0].strip()
-        fixed, steps = fix_encoding_and_explain(s)
-        return response.html(INDEX.format(
-            output='<textarea>{}</textarea>'.format(escape(fixed)),
-            steps=escape(steps_to_python(s, steps)),
-            s=escape(s),
-            examples='\n'.join(examples),
-        ))
-    else:
-        return response.html(INDEX.format(
-            output='',
-            s='',
-            steps='',
-            examples='\n'.join(examples),
-        ))
+	s = s[0].strip()
+	fixed, steps = fix_encoding_and_explain(s)
+	data = {}
+	data['fixed] = fixed
+	return json.dumps(data)
+
 
 
 if __name__ == '__main__':
