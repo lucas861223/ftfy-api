@@ -41,28 +41,9 @@ EXAMPLES = [
 INDEX = '''
 <html>
 <head>
-    <title>ftfy - fix unicode that's broken in various ways</title>
-<style>
-body {{font-family: Helvetica}}
-textarea {{width: 50%; height: 5em}}
-</style>
 </head>
 <body>
-<h1>ftfy - fix unicode that's broken in various ways</h1>
-<p>Paste in some unicode text that appears to be broken and this tool will use the <a href="https://github.com/LuminosoInsight/python-ftfy">ftfy Python library</a> to try and fix it.</p>
-<form action="/">
-    <p>
-        <textarea name="s" rows="3" cols="30">{s}</textarea>
-    </p>
-    <p>
-        <input type="submit" value="Figure out encoding errors">
-    </p>
-</form>
-<pre>{steps}</pre>
 {output}
-<h3>Examples</h3>
-{examples}
-<p style="font-size: 0.7em">Web app <a href="https://github.com/simonw/ftfy-web">source code on GitHub</a></p>
 </html>
 '''
 
@@ -105,12 +86,19 @@ def steps_to_python(s, steps):
 @app.route('/')
 async def handle_request(request):
     s = request.args.getlist('s')
-	s = s[0].strip()
-	fixed, steps = fix_encoding_and_explain(s)
-	data = {}
-	data['fixed] = fixed
-	return json.dumps(data)
-
+    if s:
+        s = s[0].strip()
+        fixed, steps = fix_encoding_and_explain(s)
+        return response.html(INDEX.format(
+            output=escape(fixed),
+        ))
+    else:
+        return response.html(INDEX.format(
+            output='',
+            s='',
+            steps='',
+            examples='\n'.join(examples),
+        ))
 
 
 if __name__ == '__main__':
